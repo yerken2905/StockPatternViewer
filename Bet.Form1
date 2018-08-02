@@ -1,0 +1,106 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Web;
+using xNet;
+using System.Xml.Linq;
+using System.Net;
+using HtmlParser;
+using System.Xml;
+using HtmlAgilityPack;
+
+namespace Bet
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+            /*string SourcePage = "";
+            string adress = "";
+            using (var Request = new HttpRequest())
+            {
+                adress = "https://olimp.kz/";
+                //Сюда грузится вся страница
+                SourcePage = Request.Get(adress).ToString();
+
+                //HtmlElement newElement = HtmlElement. (SourcePage);
+                //listBox1.Text = SourcePage;
+            //}
+            HtmlAgilityPack.HtmlDocument doc1 = new HtmlAgilityPack.HtmlDocument();
+            doc1.LoadHtml(SourcePage);*/
+
+            var path = @"d:\work\live.htm";
+            var pathResult = @"d:\work\result.htm";
+
+            var doc = new HtmlAgilityPack.HtmlDocument();
+            var docResult = new HtmlAgilityPack.HtmlDocument();
+            doc.Load(path);
+            docResult.Load(pathResult);
+            var cell = doc.DocumentNode;
+            string cellAttr;
+            //string scellResult;
+            var lTable = doc.DocumentNode;
+
+            //Результаты за день
+            lTable = docResult.DocumentNode.SelectSingleNode("//div[@id='e42022980']/..");
+            //Счет
+            cell = lTable.SelectSingleNode(".//b");
+            textBox1.Text = textBox1.Text + cell.InnerText + "\r\n";
+            //Результаты
+            cell = lTable.SelectSingleNode(".//div[@class='rd1']");
+            textBox1.Text = textBox1.Text + cell.InnerText + "\r\n";
+
+            //Live sports
+            lTable = doc.DocumentNode.SelectSingleNode("//div[@class=\"LTable\"]");
+            // Виды спорта
+            foreach (HtmlAgilityPack.HtmlNode rSport in lTable.SelectNodes(".//div[@class=\"lt-sport\"]"))
+            {
+                //Заголовок вида спорта
+                cell = rSport.SelectSingleNode(".//div[@class=\"lt-sport-title lt-showmore\"]");
+                textBox1.Text = textBox1.Text + cell.InnerText + "\r\n";
+                //Вид спорта
+                foreach (HtmlAgilityPack.HtmlNode rContent in rSport.SelectNodes
+                    (".//div[@class=\"lt-sport-content lt-hideable lt-hide\"]"))
+                {
+                    //Чемпионат
+                    foreach (HtmlAgilityPack.HtmlNode rChamp in rContent.SelectNodes(".//div[@class=\"lt-champ\"]"))
+                    {
+                        //Название чемпионата
+                        cell = rChamp.SelectSingleNode(".//div[@class=\"lt-champ-title lt-showmore\"]");
+                        textBox1.Text = textBox1.Text + cell.InnerText + "\r\n";
+                        //Ставки
+                        foreach (HtmlAgilityPack.HtmlNode rBet in rChamp.SelectNodes
+                            (".//div[@class=\"lt-match\"]"))
+                        {
+                            //Ид
+                            cellAttr = rBet.Attributes["data-id"].Value;
+                            textBox1.Text = textBox1.Text + cellAttr + "\r\n";
+                            //Время
+                            cell = rBet.SelectSingleNode(".//td[@class=\"lt-match_date\"]");
+                            textBox1.Text = textBox1.Text + cell.InnerText + "\r\n";
+                            //Команды
+                            cell = rBet.SelectSingleNode(".//div/table/tbody/tr/td[@class=\"lt-commands\"]/a");
+                            textBox1.Text = textBox1.Text + cell.InnerText + "\r\n";
+                            //Результат
+                            cell = rBet.SelectSingleNode(".//div/table/tbody/tr/td[@class=\"lt-commands\"]/div");
+                            textBox1.Text = textBox1.Text + cell.InnerText + "\r\n";
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
